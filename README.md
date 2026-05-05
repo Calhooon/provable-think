@@ -1,44 +1,65 @@
 # provable-think
 
-**Drop-in cryptographic audit trail for [Cloudflare Project Think](https://github.com/cloudflare/agents) agents.**
-
-Every lifecycle hook becomes a tamper-evident, hash-chained receipt anchored to a public cryptographic timestamp ledger no operator controls. The plaintext stays encrypted off-ledger under per-event keys. Auditors with the right viewing key get the cleartext. Wrong key gets AEAD silence.
-
 [![npm](https://img.shields.io/npm/v/provable-think?label=provable-think)](https://www.npmjs.com/package/provable-think)
 [![npm](https://img.shields.io/npm/v/provable-think-verify?label=provable-think-verify)](https://www.npmjs.com/package/provable-think-verify)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
----
+**The cheapest AI audit trail a regulator can actually verify just went open source.**
 
-## Why
+Less than a thousandth of a cent per audited decision. About 50× cheaper than Splunk Enterprise. About 100× cheaper than Datadog Cloud SIEM. The only one a regulator can verify without trusting your CIO, your SIEM vendor, or anyone who runs the platform.
 
-Logs you control are not audit trails. They are testimony.
-
-An audit trail is a record an outside party can verify *without trusting the operator*. The moment the operator can rewrite the log — or rotate the IAM that gates it, or quietly change the retention setting — the log stops being evidence.
-
-`provable-think` puts the integrity anchor outside the operator's reach, so the answer to *"did the operator change the log?"* stops requiring trust.
-
-The EU AI Act's Article 12 starts requiring traceable logs for every high-risk AI event in August 2026. NIST AI RMF v2 lands later this year. Federal procurement already requires AI audit trails. The window between "agents are everywhere" and "audit standards are settled" is the next 12–24 months.
+The math is below.
 
 ---
 
-## Live demo
+## The bill you don't see
 
-**[acme-health.pages.dev](https://acme-health.pages.dev/)** — a three-pane theater showing receipts landing in real time, persona-toggled selective disclosure, an 11-step verifier, and a tamper button that flips the verifier red on AEAD failure.
+Run a Fortune 500 with 10,000 AI agents firing 1,000 audited decisions a day each. Today's options:
 
-Type a clinical question. Watch the operator pane fill with receipt pills as Cloudflare hooks fire and anchor to the public ledger. Click the red TAMPER button — verifier flips red on step 11. Toggle persona — same ledger, different decryption surface. Real Cloudflare Workers. Real Workers AI. Real public-ledger anchoring. Real receipts.
+- **Splunk Enterprise** — $1.5M–$3M a year for SIEM ingestion and storage at that volume. Logs live in Splunk's cloud, gated by your IAM. A regulator will not accept *"we have Splunk"* as evidence the log was not changed.
+- **Datadog Cloud SIEM** — $20–$40 per host per month. At 10K agents, that is $2.4M–$4.8M annually. Same trust-boundary problem.
+- **WORM-policy S3 + custom integrity** — $30K–$100K a year in storage. Plus a 12-to-18-month engineering project to bolt on the integrity controls. Plus another year proving in court the integrity controls actually work. Estimated total program cost: $2M–$5M before anything ships.
+- **External counsel responding to one regulatory subpoena** — six weeks of partner-and-associate time at $500–$1,500/hour. Roughly $400K per subpoena. Multiple subpoenas a year for any meaningful AI deployment.
+- **Big 4 audit-readiness engagement** — $300K–$1M for a single AI compliance review.
+
+That's seven figures of annual spend that, structurally, does not produce an audit trail a regulator can verify.
+
+## The bill with `provable-think`
+
+| Line item | Cost |
+|---|---|
+| Public-ledger anchoring | **Less than a thousandth of a cent per receipt** |
+| Encrypted envelope storage (Cloudflare R2) | **Pennies per gigabyte at standard rates** |
+| Engineering integration (one line of code on `Think<Env>`) | **~1 day** |
+| Subpoena response (`npx provable-think-verify`) | **Seconds, not weeks** |
+| Auditor onboarding (grant a scoped viewing key) | **Minutes, not weeks** |
+| License | **$0 — MIT, free forever** |
+
+That is the entire bill.
+
+The anchor lives outside Cloudflare. Outside the operator. Outside any single party. The plaintext stays encrypted off-ledger under per-event keys. Right viewing key gets the cleartext. Wrong key gets AEAD silence. The agent's identity key signs every receipt.
+
+There is no middleman in the integrity path. Not Cloudflare. Not your GRC vendor. Not your regulator's preferred SaaS. The notary is public infrastructure.
 
 ---
 
-## Install
+## Why nobody else matches this
+
+It is not effort. It is architecture.
+
+Splunk, Datadog, every SIEM, every WORM S3 setup, every operator-controlled log ever shipped — all of them store the audit trail inside the same trust boundary as the system whose conduct the audit is supposed to constrain. The CIO who runs the AI also rotates the IAM that gates the log. The vendor that runs the SIEM is contractually accountable to that CIO. A defendant cannot be their own judge.
+
+The only fix is to put the integrity anchor somewhere the operator does not control. There is exactly one production-credible place to do that today at less than a thousandth of a cent per event: a public, cryptographic timestamp ledger that no single operator can lie about.
+
+[Cloudflare Project Think](https://github.com/cloudflare/agents) is the runtime. Durable Objects survive restarts. Fibers replay deterministically. Hooks fire on a clean lifecycle. Hibernation is transparent. The runtime is extraordinary. But the runtime cannot tell a regulator *"we did not rewrite this log"* because the runtime *is* the thing writing the log. That is true of every platform, by definition. `provable-think` is the layer that closes the gap.
+
+---
+
+## One line of integration
 
 ```sh
 npm install provable-think
 ```
-
----
-
-## Use
 
 ```ts
 import { Think } from "@cloudflare/think";
@@ -52,7 +73,7 @@ export class TriageAgent extends withProvenance(Think<Env>, {
 }) {}
 ```
 
-Every turn. Every tool call. Every model invocation. Every chat response. Every recovered fiber. Each one fires a cryptographically signed receipt to the public ledger in 10–30 seconds. ~145 bytes per receipt. Less than a thousandth of a cent each.
+Every turn. Every tool call. Every model invocation. Every chat response. Every recovered fiber. Each one fires a cryptographically signed receipt to the public ledger in 10 to 30 seconds.
 
 ---
 
@@ -78,28 +99,57 @@ npx provable-think-verify \
   --capability ./capability.json
 ```
 
-Eleven steps. Signed report. Seconds. The operator cannot lie to the CLI.
-
-Three failure modes, all distinguishable:
+Eleven steps. Signed report. Seconds. Three failure modes, all distinguishable:
 
 - **Wrong key** → AEAD silence (*"out of scope"*)
 - **Tampered envelope** → SHA-256 mismatch (verifier flips red)
 - **Out-of-scope event** → no decryption attempted
 
+The operator cannot lie to the CLI.
+
 ---
 
-## Cost
+## Open the demo. Try to break it.
 
-| Line item | Cost |
-|---|---|
-| Public-ledger anchoring | **Less than a thousandth of a cent per receipt** |
-| Encrypted envelope storage (Cloudflare R2) | **Pennies per gigabyte at standard rates** |
-| Engineering integration (one line of code) | **~1 day** |
-| Subpoena response (`npx provable-think-verify`) | **Seconds, not weeks** |
-| Auditor onboarding (grant a scoped viewing key) | **Minutes, not weeks** |
-| License | **$0 — MIT, free forever** |
+**[acme-health.pages.dev](https://acme-health.pages.dev/).** Three panes. One screen. No setup.
 
-At any meaningful scale, public-ledger anchoring runs roughly 50× cheaper than Splunk Enterprise and 100× cheaper than Datadog Cloud SIEM. Neither produces a log a regulator can verify.
+Type a clinical question into the triage agent. Watch the operator pane fill with receipt pills as Cloudflare hooks fire and anchor to the public ledger. Click any pill — that opens the public-ledger explorer. Permanent. Independently verifiable.
+
+Toggle the persona selector. Compliance Officer sees full PHI under Safe Harbor. External HIPAA Auditor sees operations-tagged events only. Patient sees their own session. Same ledger. Different decryption surface.
+
+Click the red TAMPER button. Watch an 11-step verifier flip red. AEAD failed. The public-ledger anchor is unchanged. The operator just got caught.
+
+Not a mockup. Real Cloudflare Workers. Real Workers AI. Real public-ledger anchoring. Real R2. Real receipts.
+
+---
+
+## The time savings dwarf the money savings
+
+A regulatory subpoena hits a normal AI shop today. Response: pull logs from three systems, reconcile timestamps, get the IT director to sign an integrity affidavit under oath, hope nobody changed retention six months ago. Six weeks of internal scramble while outside counsel's meter runs.
+
+Same subpoena. `provable-think` shop:
+
+```sh
+npx provable-think-verify --txid <id> --capability <key.json>
+```
+
+Eleven steps. Signed report. Seconds.
+
+Onboarding a new external auditor — grant a viewing key. Not provision IAM. Not sign a cascade of MNDAs. A key.
+
+Incident forensics — walk the ledger. Not interrogate the people who own the database.
+
+The labor savings dwarf the anchoring costs by orders of magnitude. The anchoring costs are the headline because they are the line item nobody believed.
+
+---
+
+## The window is closing
+
+The EU AI Act starts enforcing Article 12 in August. Every high-risk AI system needs traceable logs of every event for the system's lifetime. NIST AI RMF v2 lands later this year. Federal procurement already requires AI audit trails. California, Colorado, and Texas have AI accountability bills moving.
+
+Twelve to twenty-four months separates *"agents are everywhere"* from *"audit standards are settled."* The companies that build credible posture *now* define what credible looks like.
+
+Everyone else retrofits in court.
 
 ---
 
@@ -116,46 +166,22 @@ At any meaningful scale, public-ledger anchoring runs roughly 50× cheaper than 
 
 ---
 
-## Architecture
+## The standing offer
 
-`provable-think` extends `Think<Env>` via a higher-order class mixin. Every documented Project Think hook fires a 145-byte signed receipt to the public ledger in 10–30 seconds. The receipt's `OP_RETURN`-equivalent header carries a PRT1 magic + hookKind byte + sequence number + 32-byte SHA-256 of the canonical-JSON event payload + agent identity public key + DER signature.
+If a cheaper, faster, or more credible AI audit trail exists anywhere on the market, this README will be updated with the link. None has surfaced.
 
-The plaintext payload is encrypted under a per-event AES-256-GCM key, sealed in an AEAD envelope, and stored off-ledger in Cloudflare R2 (or in a self-hosted UHRP Worker for content-addressed redundancy). Authorized auditors receive a `ViewingCapability` containing the ECDH-derived recipient key — the agent itself enforces scope by including only authorized recipients in each envelope's recipient list.
+Pick the AI system you depend on most. Maybe your company ships it. Maybe your insurer relies on it. Maybe the agency you regulate operates it. A regulator walks in and asks: *prove the operator did not change the log.*
 
-Three trust-boundary properties:
+If the answer is *"we trust them,"* the answer is no.
 
-1. **Ledger anchor lives outside any single party.** Not Cloudflare. Not the operator. Not the package author.
-2. **Plaintext stays sealed off-ledger** — the public receipt commits to a hash, not the data.
-3. **Disclosure is gated by keys, not by trust.** Right key → cleartext. Wrong key → AEAD silence. Mathematically enforced.
+The architecture that makes the answer *yes* is open source as of this morning. It runs on the platform you are already using. It costs less than a thousandth of a cent per audited decision.
 
-For the full specification see [`docs/TECHNICAL.md`](docs/TECHNICAL.md). For the threat model see [`docs/THREAT-MODEL.md`](docs/THREAT-MODEL.md). The HIPAA preset (`HIPAA_PRESET`) covers all 18 Safe-Harbor identifier categories — see [`package/src/presets/hipaa.ts`](package/src/presets/hipaa.ts).
+`Calhooon/provable-think`. `acme-health.pages.dev`.
 
----
-
-## Status
-
-| Phase | Goal | Status |
-|---|---|---|
-| 0 — Spec | Architecture, threat model, HIPAA crosswalk | ✅ |
-| 1 — Spike | Prove `@bsv/sdk` runs in Workers | ✅ |
-| 2.1 — Full HOC + real broadcast | Every documented hook → mainnet | ✅ |
-| 2.2 — BRC-78 envelope encryption + R2 | PHI never on the public ledger; auditors decrypt scope-limited | ✅ |
-| 2.3 — Selective-disclosure API | grantViewingKey / revoke / audit-manifest | ✅ |
-| 2.4 — Standalone verifier CLI | `npx provable-think-verify` (11-step pipeline) | ✅ |
-| 2.4b — UHRP distributed storage | Encrypted envelopes on a self-hosted UHRP Worker | ✅ |
-| 2.5 — HIPAA preset | Scope tags + Safe-Harbor redaction across 18 identifier categories | ✅ |
-| 2.6 — Acme Health Three-Pane Theater | Live agent + persona toggle + tamper button | ✅ ([acme-health.pages.dev](https://acme-health.pages.dev/)) |
-| 3.0 — Two-Worker key separation | Funding key in a separate Cloudflare account | ⏳ |
-| 4.0 — `1.0.0` GA | SLSA L3 + reproducible builds + npm provenance | ⏳ |
+What's your stack's answer?
 
 ---
 
 ## License
 
 MIT. Copyright (c) 2026 John Calhoun.
-
----
-
-## Author
-
-Built by John Calhoun. The architecture matters more than I do — fork it, run it against your stack, and tell me what your audit trail's answer is.
