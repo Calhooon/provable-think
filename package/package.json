@@ -1,0 +1,88 @@
+{
+  "name": "provable-think",
+  "version": "0.1.0-alpha.0",
+  "description": "Drop-in cryptographic audit trail for Cloudflare Project Think agents. Every lifecycle hook becomes a tamper-evident, hash-chained receipt anchored to a public ledger no operator controls. Selective disclosure via scoped viewing keys.",
+  "license": "MIT",
+  "author": "John Calhoun",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./wallet": {
+      "import": "./dist/wallet.js",
+      "types": "./dist/wallet.d.ts"
+    },
+    "./arc": {
+      "import": "./dist/arc.js",
+      "types": "./dist/arc.d.ts"
+    },
+    "./commitment": {
+      "import": "./dist/commitment.js",
+      "types": "./dist/commitment.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "clean": "rm -rf dist dist-tests",
+    "test": "tsc -p tests/tsconfig.json && node --test dist-tests/tests/"
+  },
+  "dependencies": {
+    "@bsv/sdk": "2.0.13"
+  },
+  "peerDependencies": {
+    "@cloudflare/think": ">=0.4.0",
+    "agents": ">=0.11.0"
+  },
+  "peerDependenciesMeta": {
+    "@cloudflare/think": {
+      "optional": false
+    },
+    "agents": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260128.0",
+    "@types/node": "^25.6.0",
+    "typescript": "^5.6.3"
+  },
+  "keywords": [
+    "audit-trail",
+    "ai-agents",
+    "cloudflare",
+    "project-think",
+    "@cloudflare/think",
+    "compliance",
+    "tamper-evident",
+    "selective-disclosure",
+    "verifiable-logs",
+    "regulatory",
+    "hipaa",
+    "eu-ai-act"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Calhooon/provable-think"
+  },
+  "homepage": "https://github.com/Calhooon/provable-think",
+  "bugs": {
+    "url": "https://github.com/Calhooon/provable-think/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

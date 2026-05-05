@@ -1,0 +1,43 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "provable-think-e2e",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-01-28",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "TEST_AGENT",
+        "class_name": "TestAgent"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["TestAgent"]
+    }
+  ],
+
+  "vars": {
+    // Comma-separated ARC URLs raced in parallel. GorillaPool first because
+    // it's the one that reliably reaches SEEN_ON_NETWORK.
+    "ARC_URLS": "https://arc.gorillapool.io,https://api.taal.com/arc"
+  },
+
+  "r2_buckets": [
+    {
+      "binding": "ENVELOPES",
+      "bucket_name": "provable-think-e2e-envelopes",
+      "preview_bucket_name": "provable-think-e2e-envelopes-preview"
+    }
+  ],
+
+  "observability": { "enabled": true }
+
+  // Secrets (NOT committed):
+  //   AGENT_PRIVATE_KEY_HEX  — agent identity (read by withProvenance)
+  //   TAAL_API_KEY           — TaaL ARC bearer token (optional)
+  // For local dev: copy .dev.vars.example → .dev.vars and fill in.
+}

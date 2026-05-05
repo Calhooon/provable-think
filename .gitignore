@@ -1,0 +1,23 @@
+# Secrets — NEVER commit
+secrets.md
+.dev.vars
+.dev.vars.*
+*.pem
+*.key
+
+# Cloudflare / wrangler
+.wrangler/
+node_modules/
+.cf-cache/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Build artifacts
+dist/
+dist-tests/
+build/
+out/

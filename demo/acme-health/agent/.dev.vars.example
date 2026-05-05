@@ -1,0 +1,12 @@
+# Copy this file to `.dev.vars` (gitignored) and fill in real values.
+#
+# Per DECISIONS.md §5, the Phase 2.6 demo agent uses a fresh identity priv
+# key — separate from the test-worker's so envelopes/chains don't intermix
+# with Phase 2.5 quality-gate evidence.
+
+AGENT_PRIVATE_KEY_HEX=...
+TAAL_API_KEY=...
+
+# Local dev overrides — the wrangler.jsonc vars target the deployed origin.
+CORS_ORIGIN=http://localhost:5173
+DEMO_MODE=true

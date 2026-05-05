@@ -1,0 +1,58 @@
+name: Documentation
+description: Doc fix, clarification, missing cross-link, or new section.
+title: "[docs] <one-line summary>"
+labels: ["type:docs", "area:docs"]
+body:
+  - type: dropdown
+    id: doc
+    attributes:
+      label: Which document?
+      options:
+        - "README.md"
+        - "TECHNICAL.md"
+        - "ADVANTAGES.md"
+        - "BRIEF.md"
+        - "ARCHITECTURE.md"
+        - "THREAT-MODEL.md"
+        - "ROADMAP.md"
+        - "CONTRIBUTING.md"
+        - "SECURITY.md"
+        - "progress.md"
+        - "AUDIT-2026-04-28.md"
+        - "Code comments / JSDoc"
+        - "Other"
+    validations:
+      required: true
+
+  - type: input
+    id: section
+    attributes:
+      label: Section / line
+      description: Where in the doc? (e.g., "TECHNICAL.md §5.6", "README.md status table row 3")
+      placeholder: "TECHNICAL.md §X.Y"
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: What's wrong / missing?
+      description: Quote the existing text if applicable; describe what's confusing or incorrect.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed change
+      description: What should it say instead? Verbatim if you have it.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - "P0 — actively misleading; could cause an integration to fail"
+        - "P1 — outdated / inconsistent with shipped code"
+        - "P2 — confusing / could be clearer"
+        - "P3 — typo / cosmetic"
+    validations:
+      required: true

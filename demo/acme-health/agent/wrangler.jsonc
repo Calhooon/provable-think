@@ -1,0 +1,51 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "acme-health-agent",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-01-28",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "TRIAGE_AGENT",
+        "class_name": "TriageAgent"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["TriageAgent"]
+    }
+  ],
+
+  "ai": { "binding": "AI" },
+
+  "r2_buckets": [
+    {
+      "binding": "ENVELOPES",
+      "bucket_name": "acme-health-envelopes",
+      "preview_bucket_name": "acme-health-envelopes-preview"
+    }
+  ],
+
+  "vars": {
+    // GorillaPool first (most reliable SEEN_ON_NETWORK), TaaL second.
+    "ARC_URLS": "https://arc.gorillapool.io,https://api.taal.com/arc",
+    // Gates the /admin/tamper endpoint. Production deploys leave this off.
+    "DEMO_MODE": "true",
+    // Frontend origin allowed via CORS (additional fallback; the corsOrigin()
+    // function already allows any *.pages.dev / *.workers.dev / localhost).
+    // Local dev overrides via .dev.vars.
+    "CORS_ORIGIN": "https://acme-health.pages.dev"
+  },
+
+  "observability": { "enabled": true }
+
+  // Secrets (NOT committed):
+  //   AGENT_PRIVATE_KEY_HEX  — Phase 2.6 demo agent identity (separate from
+  //                            the test-worker's key — see DECISIONS.md §5).
+  //   TAAL_API_KEY           — TaaL ARC bearer token (optional but recommended).
+  // For local dev: copy .dev.vars.example → .dev.vars and fill in.
+}

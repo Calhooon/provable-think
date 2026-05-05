@@ -1,0 +1,73 @@
+name: Feature request
+description: New functionality or capability addition.
+title: "[feat] <one-line summary>"
+labels: ["type:feat"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For wire-format changes (PRT1 → PRT2 family, envelope shape, etc), use the
+        "Wire-format change" template instead — those need additional discussion.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What's missing or hard today? Concrete user/operator/auditor workflow.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: How should it work? Sketch the API surface, config shape, or end-user experience.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else did you think about? Why is this the best shape?
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Where does this land?
+      options:
+        - "v0.1.x (Phase 2.5 HIPAA preset)"
+        - "v0.1.x (Phase 2.6 Acme Health demo)"
+        - "v0.2 (lifecycle hooks)"
+        - "v0.3 (operator hardening)"
+        - "v0.5 (SLSA + reproducibility)"
+        - "v3.0 (Path D production)"
+        - "v4.0 (OSS launch)"
+        - "Long-tail / unscheduled"
+        - "Not sure — needs triage"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - "P0 — blocks the milestone it's in"
+        - "P1 — important, schedule next cycle"
+        - "P2 — useful, no urgency"
+        - "P3 — nice to have"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: scope-check
+    attributes:
+      label: Scope checks
+      options:
+        - label: "Has not been deliberately excluded by ROADMAP.md §What's NOT on this roadmap"
+          required: true
+        - label: "Doesn't add a runtime npm dep without justification"
+          required: true
+        - label: "Doesn't introduce a Node-only path (Workers-compatible)"
+          required: true

@@ -1,0 +1,54 @@
+{
+  "name": "provable-think-verify",
+  "version": "0.1.0-alpha.1",
+  "description": "Standalone CLI for verifying provable-think audit-trail receipts. Runs an 11-step verification pipeline against a public-ledger anchor and an auditor's scoped viewing key.",
+  "license": "MIT",
+  "author": "John Calhoun",
+  "type": "module",
+  "bin": {
+    "provable-think-verify": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "verify": "node dist/cli.js"
+  },
+  "dependencies": {
+    "@bsv/sdk": "2.0.13",
+    "provable-think": "^0.1.0-alpha.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.6.3"
+  },
+  "keywords": [
+    "audit-trail",
+    "verifier",
+    "cli",
+    "provable-think",
+    "compliance",
+    "tamper-evident",
+    "verifiable-logs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Calhooon/provable-think",
+    "directory": "package/cli"
+  },
+  "homepage": "https://github.com/Calhooon/provable-think/tree/main/package/cli",
+  "bugs": {
+    "url": "https://github.com/Calhooon/provable-think/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

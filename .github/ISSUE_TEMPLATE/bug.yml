@@ -1,0 +1,81 @@
+name: Bug report
+description: A defect in shipped code, docs, or a wire-format claim.
+title: "[bug] <one-line summary>"
+labels: ["type:bug", "priority:P2"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Wire-format / crypto-claim bugs are highest-priority — they invalidate audits.
+        For security vulnerabilities, do NOT open a public issue: use the private advisory channel from SECURITY.md.
+
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: Output of `pnpm list provable-think` (or the git commit SHA if working from source).
+      placeholder: "0.1.0-alpha.0 / commit abcdef0"
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: Cloudflare Workers (wrangler version), Node version (for the verifier CLI), or "browser".
+      placeholder: "wrangler 3.x / Node 22"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Concise description of the unexpected behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: Reference to docs/spec section if applicable (e.g., "TECHNICAL.md §5.6 says PRT1 is ~145–148 bytes; we got 200 bytes.").
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Step-by-step. For wire-format bugs, include the bytes (hex) on both sides.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: input
+    id: txid
+    attributes:
+      label: Mainnet txid (if applicable)
+      description: If a real broadcast is involved, include the txid so we can fetch the actual bytes.
+      placeholder: "<64-hex>"
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Estimated severity
+      options:
+        - "P0 — audit-trail integrity break (forging, undetectable tampering)"
+        - "P1 — selective-disclosure failure or significant operational risk"
+        - "P2 — bug, but with limited blast radius"
+        - "P3 — minor / cosmetic"
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: Anything that mitigates the issue today.

@@ -1,0 +1,81 @@
+name: Wire-format change
+description: A change to PRT1 OP_RETURN, envelope JSON shape, or capability JSON.
+title: "[wire-format] <one-line summary>"
+labels: ["area:wire-format", "priority:P0", "needs-mainnet-gate"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ Wire-format changes are **high-stakes**. Old verifiers must continue verifying old commitments forever.
+        Any incompatible change requires bumping the magic prefix (PRT1 → PRT2). Backward-compatible additions are preferred.
+
+  - type: dropdown
+    id: target
+    attributes:
+      label: Wire format affected
+      options:
+        - "PRT1 OP_RETURN payload (TECHNICAL.md §5.6)"
+        - "Off-chain envelope JSON (TECHNICAL.md §5.7)"
+        - "ViewingCapability JSON (TECHNICAL.md §3.3)"
+        - "/commit-info or /envelope endpoint shape (TECHNICAL.md §6.4)"
+        - "BRC-2 wrap protocolID/keyID format (TECHNICAL.md §5.5)"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why does the wire format need to change?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-bytes
+    attributes:
+      label: Proposed bytes / shape
+      description: Show the new layout. For binary changes, byte-by-byte. For JSON, the new shape.
+      render: text
+    validations:
+      required: true
+
+  - type: dropdown
+    id: compat
+    attributes:
+      label: Backward compatibility
+      options:
+        - "Backward-compatible (additive — old verifiers ignore new fields)"
+        - "Breaking — requires PRT1 → PRT2 magic-prefix bump"
+        - "Unclear — needs discussion"
+    validations:
+      required: true
+
+  - type: textarea
+    id: verifier-plan
+    attributes:
+      label: Verifier impact
+      description: How does the verifier CLI change? Will old PRT1 commitments still verify?
+    validations:
+      required: true
+
+  - type: textarea
+    id: test-plan
+    attributes:
+      label: Mainnet test plan
+      description: This change must be exercised end-to-end on mainnet before merge. Outline the round-trip plan.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: spec-update
+    attributes:
+      label: Pre-merge requirements
+      options:
+        - label: "TECHNICAL.md updated in the same PR"
+          required: true
+        - label: "Mainnet quality-gate txid added to verification ledger (TECHNICAL.md §13)"
+          required: true
+        - label: "progress.md changelog entry added"
+          required: true
+        - label: "If breaking: ROADMAP.md notes the version it lands in"

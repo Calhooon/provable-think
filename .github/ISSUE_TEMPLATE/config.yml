@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Calhooon/provable-think/security/advisories/new
+    about: |
+      Report a security vulnerability privately. Do NOT open a public
+      issue. See SECURITY.md for the disclosure policy + severity rubric.
+  - name: Question or discussion
+    url: https://github.com/Calhooon/provable-think/discussions
+    about: |
+      For "how do I…" or "should we…" type conversations. Issues are
+      for actionable work tracking; discussions are for everything else.

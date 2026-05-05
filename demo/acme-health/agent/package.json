@@ -1,0 +1,25 @@
+{
+  "name": "acme-health-agent",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Phase 2.6 demo agent worker — clinical-triage Think agent with HIPAA_PRESET, anchored to BSV mainnet via provable-think.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bsv/sdk": "2.0.13",
+    "@cloudflare/think": "^0.4.1",
+    "agents": "^0.11.0",
+    "provable-think": "file:../../../package",
+    "workers-ai-provider": "^3.1.12"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260128.0",
+    "typescript": "^5.6.3",
+    "wrangler": "^4.86.0"
+  }
+}
